@@ -11,8 +11,16 @@ const io = new Server(server, {
       'http://localhost:3000'
     ],
     methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'], // Explicitly allow both transports
+  allowEIO3: true // Support for older Socket.IO clients if needed
+});
+
+// Serve a simple endpoint for Vercel health checks
+app.get('/', (req, res) => {
+  res.send('Indian Combat Backend');
 });
 
 const rooms = {};
@@ -146,11 +154,9 @@ io.on('connection', (socket) => {
   }, 1000 / 60);
 });
 
-app.get('/', (req, res) => {
-  res.send('Indian Combat Backend');
-});
-
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app; // Export for Vercel
